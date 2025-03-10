@@ -1,0 +1,151 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: Arial, sans-serif;
+    background-color: #191931;
+    padding: 20px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+}
+
+h1 {
+    text-align: center;
+    margin-bottom: 20px;
+    font-size: 24px;
+    color: #e1e0ff;
+}
+
+.container {
+    background: rgb(56, 54, 85);
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 12, 66, 0.459);
+    padding: 20px 30px 20px 30px;
+    margin-bottom: 20px;
+    max-width: 600px; 
+    width: 100%; 
+}
+
+.container h2 {
+    margin-bottom: 15px;
+    font-size: 20px;
+    color: #e1e0ff;
+}
+
+.container input,
+.container select {
+    width: 100%;
+    padding: 10px;
+    margin: 10px 0;
+    border: none;
+    font-size: 15px;
+    background: rgb(33, 31, 59);
+    border-radius: 10px;
+    color: #d4d6ff;
+}
+
+.container button {
+    width: 100%;
+    padding: 10px;
+    background-color: #205791;
+    color: #f2fffc;
+    border: none;
+    border-radius: 5px;
+    font-size: 16px;
+    cursor: pointer;
+}
+
+.container button:hover {
+    background-color: #213852;
+}
+
+.resultado {
+    background: rgb(56, 54, 85);
+    padding: 20px;
+    border-radius: 10px;
+    margin-top: 20px;
+    color: #eae9ff;
+}
+
+.resultado h3 {
+    margin-bottom: 15px;
+    font-size: 18px;
+    color: #efeeff;
+}
+
+.resultado p {
+    margin: 10px 0;
+    font-size: 16px;
+}
+
+.botoes {
+    display: flex;
+    gap: 10px;
+    margin-top: 20px;
+}
+
+.botoes button {
+    flex: 1;
+}
+
+
+@media (max-width: 768px) {
+    h1 {
+        font-size: 20px;
+    }
+
+    .container h2 {
+        font-size: 18px;
+    }
+
+    .container input,
+    .container select,
+    .container button {
+        font-size: 14px;
+    }
+
+    .resultado h3 {
+        font-size: 16px;
+    }
+
+    .resultado p {
+        font-size: 14px;
+    }
+
+    .botoes {
+        flex-direction: column;
+    }
+
+    .botoes button {
+        width: 100%;
+    }
+}
+
+@media (max-width: 480px) {
+    h1 {
+        font-size: 18px;
+    }
+
+    .container h2 {
+        font-size: 16px;
+    }
+
+    .container input,
+    .container select,
+    .container button {
+        font-size: 12px;
+    }
+
+    .resultado h3 {
+        font-size: 14px;
+    }
+
+    .resultado p {
+        font-size: 12px;
+    }
+}
