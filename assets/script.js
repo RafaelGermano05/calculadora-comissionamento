@@ -2,7 +2,30 @@ let resultadoConquista = 0;
 let resultadoSafra = 0;
 let resultadoAceleradores = 0;
 
+// Função para formatar o valor como moeda
+function formatarMoeda(valor) {
+    return new Intl.NumberFormat('pt-BR', {
+        style: 'currency',
+        currency: 'BRL'
+    }).format(valor);
+}
 
+// Função para remover a formatação e converter para número
+function removerFormatacaoMoeda(valorFormatado) {
+    return parseFloat(valorFormatado
+        .replace(/\./g, '') // Remove pontos
+        .replace(',', '.') // Substitui vírgula por ponto
+        .replace(/[^0-9.]/g, '')); // Remove tudo que não for número ou ponto
+}
+
+// Função para formatar o input enquanto o usuário digita
+document.getElementById('ponderado-medio').addEventListener('input', function (e) {
+    let valor = e.target.value.replace(/\D/g, ''); // Remove tudo que não for número
+    valor = (Number(valor) / 100).toFixed(2); // Converte para número com duas casas decimais
+    e.target.value = formatarMoeda(valor); // Formata como moeda
+});
+
+// Função para calcular Conquista
 function calcularConquista() {
     const valorReferencia = parseFloat(document.getElementById("valor-referencia").value);
     const newMas = parseInt(document.getElementById("new-mas").value);
@@ -22,10 +45,11 @@ function calcularConquista() {
         else if (newMas >= 15) resultadoConquista = valorReferencia * 0.50;
     }
 
-    document.getElementById("resultado-conquista").innerHTML = `<p>Conquista: R$ ${resultadoConquista.toFixed(2)}</p>`;
+    document.getElementById("resultado-conquista").innerHTML = `<p>Conquista: ${formatarMoeda(resultadoConquista)}</p>`;
     calcularTotal();
 }
 
+// Função para calcular Safra
 function calcularSafra() {
     const porcentagemParcelado = parseFloat(document.getElementById("porcentagem-parcelado").value);
     const migradosCPF15_30 = parseInt(document.getElementById("migrados-cpf-15-30").value);
@@ -52,43 +76,46 @@ function calcularSafra() {
     else if (porcentagemParcelado > 60) totalSafra += migradosCNPJ30 * 350;
 
     resultadoSafra = totalSafra;
-    document.getElementById("resultado-safra").innerHTML = `<p>Safra: R$ ${resultadoSafra.toFixed(2)}</p>`;
+    document.getElementById("resultado-safra").innerHTML = `<p>Safra: ${formatarMoeda(resultadoSafra)}</p>`;
     calcularTotal();
 }
 
-
+// Função para calcular Aceleradores
 function calcularAceleradores() {
+    const ponderadoMedio = document.getElementById('ponderado-medio').value;
+    const ponderadoMedioNumerico = removerFormatacaoMoeda(ponderadoMedio);
     const migradosTotais = parseInt(document.getElementById("migrados-totais").value);
-    const ponderadoMedio = parseFloat(document.getElementById("ponderado-medio").value);
 
     let totalAceleradores = 0;
 
-
+    // Acelerador de Qualidade
     if (migradosTotais >= 7 && migradosTotais <= 11) totalAceleradores += resultadoSafra * 0.20;
     else if (migradosTotais >= 12) totalAceleradores += resultadoSafra * 0.30;
 
- 
-    if (ponderadoMedio >= 200000 && ponderadoMedio <= 300000) totalAceleradores += resultadoSafra * 0.20;
-    else if (ponderadoMedio > 300000) totalAceleradores += resultadoSafra * 0.30;
+    // Acelerador de Volume
+    if (ponderadoMedioNumerico >= 200000 && ponderadoMedioNumerico <= 300000) totalAceleradores += resultadoSafra * 0.20;
+    else if (ponderadoMedioNumerico > 300000) totalAceleradores += resultadoSafra * 0.30;
 
     resultadoAceleradores = totalAceleradores;
-    document.getElementById("resultado-aceleradores").innerHTML = `<p>Aceleradores: R$ ${resultadoAceleradores.toFixed(2)}</p>`;
+    document.getElementById("resultado-aceleradores").innerHTML = `<p>Aceleradores: ${formatarMoeda(resultadoAceleradores)}</p>`;
     calcularTotal();
 }
 
+// Função para calcular o Total
 function calcularTotal() {
     const nomeConsultor = document.getElementById("nome-consultor").value;
     const totalComissionamento = resultadoConquista + resultadoSafra + resultadoAceleradores;
 
     document.getElementById("resultado-final").innerHTML = `
         <h3>Resultado Final para ${nomeConsultor}</h3>
-        <p>Conquista: R$ ${resultadoConquista.toFixed(2)}</p>
-        <p>Safra: R$ ${resultadoSafra.toFixed(2)}</p>
-        <p>Aceleradores: R$ ${resultadoAceleradores.toFixed(2)}</p>
-        <p><strong>Total: R$ ${totalComissionamento.toFixed(2)}</strong></p>
+        <p>Conquista: ${formatarMoeda(resultadoConquista)}</p>
+        <p>Safra: ${formatarMoeda(resultadoSafra)}</p>
+        <p>Aceleradores: ${formatarMoeda(resultadoAceleradores)}</p>
+        <p><strong>Total: ${formatarMoeda(totalComissionamento)}</strong></p>
     `;
 }
 
+// Função para resetar
 function resetar() {
     document.getElementById("nome-consultor").value = "";
     document.getElementById("valor-referencia").value = "";
@@ -110,6 +137,7 @@ function resetar() {
     resultadoAceleradores = 0;
 }
 
+// Função para exportar PDF
 function exportarPDF() {
     const { jsPDF } = window.jspdf;
     const doc = new jsPDF();
@@ -118,10 +146,10 @@ function exportarPDF() {
     const totalComissionamento = resultadoConquista + resultadoSafra + resultadoAceleradores;
 
     doc.text(`Relatório de Comissionamento - ${nomeConsultor}`, 10, 10);
-    doc.text(`Conquista: R$ ${resultadoConquista.toFixed(2)}`, 10, 20);
-    doc.text(`Safra: R$ ${resultadoSafra.toFixed(2)}`, 10, 30);
-    doc.text(`Aceleradores: R$ ${resultadoAceleradores.toFixed(2)}`, 10, 40);
-    doc.text(`Total: R$ ${totalComissionamento.toFixed(2)}`, 10, 50);
+    doc.text(`Conquista: ${formatarMoeda(resultadoConquista)}`, 10, 20);
+    doc.text(`Safra: ${formatarMoeda(resultadoSafra)}`, 10, 30);
+    doc.text(`Aceleradores: ${formatarMoeda(resultadoAceleradores)}`, 10, 40);
+    doc.text(`Total: ${formatarMoeda(totalComissionamento)}`, 10, 50);
 
     doc.save(`comissionamento_${nomeConsultor}.pdf`);
 }
