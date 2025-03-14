@@ -138,18 +138,103 @@ function resetar() {
 }
 
 // Função para exportar PDF
+// Função para exportar PDF
 function exportarPDF() {
     const { jsPDF } = window.jspdf;
     const doc = new jsPDF();
 
+    // Cabeçalho do PDF
+    doc.setFontSize(18);
+    doc.text("Calculadora de Simulação de Comissionamento", 10, 15);
+
+    // Informações do Consultor
     const nomeConsultor = document.getElementById("nome-consultor").value;
+    doc.setFontSize(12);
+    doc.text(`Consultor: ${nomeConsultor}`, 10, 25);
+
+    // Dados de Conquista
+    doc.setFontSize(14);
+    doc.text("Conquista", 10, 35);
+    doc.setFontSize(12);
+    const valorReferencia = parseFloat(document.getElementById("valor-referencia").value);
+    const newMas = parseInt(document.getElementById("new-mas").value);
+    const categoria = document.getElementById("categoria").value;
+    const resultadoConquista = calcularValorPorCategoria(categoria); // Resultado calculado
+
+    doc.text(`Valor de Referência: ${formatarMoeda(valorReferencia)}`, 10, 45);
+    doc.text(`Quantidade de New Mas: ${newMas}`, 10, 55);
+    doc.text(`Categoria: ${categoria}`, 10, 65);
+    doc.text(`Total Conquista: ${formatarMoeda(resultadoConquista)}`, 10, 75);
+
+    // Dados de Safra
+    doc.setFontSize(14);
+    doc.text("Safra", 10, 85);
+    doc.setFontSize(12);
+    const porcentagemParcelado = parseFloat(document.getElementById("porcentagem-parcelado").value);
+    const resultadoSafra = calcularValorPorCategoria("safra"); // Resultado calculado
+
+    doc.text(`Porcentagem de Parcelado: ${porcentagemParcelado}%`, 10, 95);
+    doc.text(`Migrados CPF 15k-29,99k: ${document.getElementById("migrados-cpf-15-30").value}`, 10, 105);
+    doc.text(`Valor por CPF 15k-29,99k: ${formatarMoeda(calcularValorPorCategoria("cpf-15-30"))}`, 10, 115);
+    doc.text(`Migrados CPF +30k: ${document.getElementById("migrados-cpf-30").value}`, 10, 125);
+    doc.text(`Valor por CPF +30k: ${formatarMoeda(calcularValorPorCategoria("cpf-30"))}`, 10, 135);
+    doc.text(`Migrados CNPJ 15k-29,99k: ${document.getElementById("migrados-cnpj-15-30").value}`, 10, 145);
+    doc.text(`Valor por CNPJ 15k-29,99k: ${formatarMoeda(calcularValorPorCategoria("cnpj-15-30"))}`, 10, 155);
+    doc.text(`Migrados CNPJ +30k: ${document.getElementById("migrados-cnpj-30").value}`, 10, 165);
+    doc.text(`Valor por CNPJ +30k: ${formatarMoeda(calcularValorPorCategoria("cnpj-30"))}`, 10, 175);
+    doc.text(`Total Safra: ${formatarMoeda(resultadoSafra)}`, 10, 185);
+
+    // Dados de Aceleradores
+    doc.setFontSize(14);
+    doc.text("Aceleradores", 10, 195);
+    doc.setFontSize(12);
+    const migradosTotais = parseInt(document.getElementById("migrados-totais").value);
+    const ponderadoMedio = parseFloat(removerFormatacaoMoeda(document.getElementById("ponderado-medio").value));
+    const resultadoAceleradores = calcularAceleradorQualidade() + calcularAceleradorVolume();
+
+    doc.text(`Migrados Totais: ${migradosTotais}`, 10, 205);
+    doc.text(`Ponderado Médio Total: ${formatarMoeda(ponderadoMedio)}`, 10, 215);
+    doc.text(`Acelerador de Qualidade: ${formatarMoeda(calcularAceleradorQualidade())}`, 10, 225);
+    doc.text(`Acelerador de Volume: ${formatarMoeda(calcularAceleradorVolume())}`, 10, 235);
+    doc.text(`Total Aceleradores: ${formatarMoeda(resultadoAceleradores)}`, 10, 245);
+
+    // Total de Comissionamento
+    doc.setFontSize(14);
+    doc.text("Total de Comissionamento", 10, 255);
+    doc.setFontSize(12);
     const totalComissionamento = resultadoConquista + resultadoSafra + resultadoAceleradores;
+    doc.text(`Total: ${formatarMoeda(totalComissionamento)}`, 10, 265);
 
-    doc.text(`Relatório de Comissionamento - ${nomeConsultor}`, 10, 10);
-    doc.text(`Conquista: ${formatarMoeda(resultadoConquista)}`, 10, 20);
-    doc.text(`Safra: ${formatarMoeda(resultadoSafra)}`, 10, 30);
-    doc.text(`Aceleradores: ${formatarMoeda(resultadoAceleradores)}`, 10, 40);
-    doc.text(`Total: ${formatarMoeda(totalComissionamento)}`, 10, 50);
-
+    // Salvar o PDF
     doc.save(`comissionamento_${nomeConsultor}.pdf`);
+}
+
+// Função para calcular o valor por categoria 
+function calcularValorPorCategoria(categoria) {
+    const porcentagemParcelado = parseFloat(document.getElementById("porcentagem-parcelado").value) || 0;
+    const migrados = parseInt(document.getElementById("migrados").value) || 0;
+    let valor = 0;
+
+    switch (categoria) {
+        case "cpf-15-30":
+            valor = migrados * 100 * (porcentagemParcelado / 100);
+            break;
+        case "cpf-30":
+            valor = migrados * 150 * (porcentagemParcelado / 100);
+            break;
+        case "cnpj-15-30":
+            valor = migrados * 200 * (porcentagemParcelado / 100);
+            break;
+        case "cnpj-30":
+            valor = migrados * 250 * (porcentagemParcelado / 100);
+            break;
+        case "safra":
+            valor = migrados * 50 * (porcentagemParcelado / 100);
+            break;
+        default:
+            valor = migrados * 50;
+            break;
+    }
+
+    return valor;
 }
