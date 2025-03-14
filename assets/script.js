@@ -225,7 +225,7 @@ function calcularAceleradorQualidade() {
     return 0;
 }
 
-// Função para calcular o 
+
 function calcularAceleradorVolume() {
     const ponderadoMedio = removerFormatacaoMoeda(document.getElementById("ponderado-medio").value);
     if (ponderadoMedio >= 200000 && ponderadoMedio <= 300000) return resultadoSafra * 0.20;
