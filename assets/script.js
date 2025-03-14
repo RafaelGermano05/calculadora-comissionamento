@@ -10,22 +10,22 @@ function formatarMoeda(valor) {
     }).format(valor);
 }
 
-// Função para remover a formatação e converter para número
+
 function removerFormatacaoMoeda(valorFormatado) {
     return parseFloat(valorFormatado
-        .replace(/\./g, '') // Remove pontos
-        .replace(',', '.') // Substitui vírgula por ponto
-        .replace(/[^0-9.]/g, '')); // Remove tudo que não for número ou ponto
+        .replace(/\./g, '') 
+        .replace(',', '.') 
+        .replace(/[^0-9.]/g, '')); 
 }
 
-// Função para formatar o input enquanto o usuário digita
+
 document.getElementById('ponderado-medio').addEventListener('input', function (e) {
-    let valor = e.target.value.replace(/\D/g, ''); // Remove tudo que não for número
-    valor = (Number(valor) / 100).toFixed(2); // Converte para número com duas casas decimais
-    e.target.value = formatarMoeda(valor); // Formata como moeda
+    let valor = e.target.value.replace(/\D/g, ''); 
+    valor = (Number(valor) / 100).toFixed(2); 
+    e.target.value = formatarMoeda(valor); 
 });
 
-// Função para calcular Conquista
+
 function calcularConquista() {
     const valorReferencia = parseFloat(document.getElementById("valor-referencia").value);
     const newMas = parseInt(document.getElementById("new-mas").value);
@@ -49,7 +49,7 @@ function calcularConquista() {
     calcularTotal();
 }
 
-// Função para calcular Safra
+
 function calcularSafra() {
     const porcentagemParcelado = parseFloat(document.getElementById("porcentagem-parcelado").value);
     const migradosCPF15_30 = parseInt(document.getElementById("migrados-cpf-15-30").value);
@@ -80,7 +80,6 @@ function calcularSafra() {
     calcularTotal();
 }
 
-// Função para calcular Aceleradores
 function calcularAceleradores() {
     const ponderadoMedio = document.getElementById('ponderado-medio').value;
     const ponderadoMedioNumerico = removerFormatacaoMoeda(ponderadoMedio);
@@ -101,7 +100,6 @@ function calcularAceleradores() {
     calcularTotal();
 }
 
-// Função para calcular o Total
 function calcularTotal() {
     const nomeConsultor = document.getElementById("nome-consultor").value;
     const totalComissionamento = resultadoConquista + resultadoSafra + resultadoAceleradores;
@@ -115,7 +113,6 @@ function calcularTotal() {
     `;
 }
 
-// Função para resetar
 function resetar() {
     document.getElementById("nome-consultor").value = "";
     document.getElementById("valor-referencia").value = "";
@@ -137,8 +134,7 @@ function resetar() {
     resultadoAceleradores = 0;
 }
 
-// Função para exportar PDF
-// Função para exportar PDF
+
 function exportarPDF() {
     const { jsPDF } = window.jspdf;
     const doc = new jsPDF();
@@ -156,24 +152,16 @@ function exportarPDF() {
     doc.setFontSize(14);
     doc.text("Conquista", 10, 35);
     doc.setFontSize(12);
-    const valorReferencia = parseFloat(document.getElementById("valor-referencia").value);
-    const newMas = parseInt(document.getElementById("new-mas").value);
-    const categoria = document.getElementById("categoria").value;
-    const resultadoConquista = calcularValorPorCategoria(categoria); // Resultado calculado
-
-    doc.text(`Valor de Referência: ${formatarMoeda(valorReferencia)}`, 10, 45);
-    doc.text(`Quantidade de New Mas: ${newMas}`, 10, 55);
-    doc.text(`Categoria: ${categoria}`, 10, 65);
+    doc.text(`Valor de Referência: ${formatarMoeda(parseFloat(document.getElementById("valor-referencia").value))}`, 10, 45);
+    doc.text(`Quantidade de New Mas: ${document.getElementById("new-mas").value}`, 10, 55);
+    doc.text(`Categoria: ${document.getElementById("categoria").value}`, 10, 65);
     doc.text(`Total Conquista: ${formatarMoeda(resultadoConquista)}`, 10, 75);
 
     // Dados de Safra
     doc.setFontSize(14);
     doc.text("Safra", 10, 85);
     doc.setFontSize(12);
-    const porcentagemParcelado = parseFloat(document.getElementById("porcentagem-parcelado").value);
-    const resultadoSafra = calcularValorPorCategoria("safra"); // Resultado calculado
-
-    doc.text(`Porcentagem de Parcelado: ${porcentagemParcelado}%`, 10, 95);
+    doc.text(`Porcentagem de Parcelado: ${document.getElementById("porcentagem-parcelado").value}%`, 10, 95);
     doc.text(`Migrados CPF 15k-29,99k: ${document.getElementById("migrados-cpf-15-30").value}`, 10, 105);
     doc.text(`Valor por CPF 15k-29,99k: ${formatarMoeda(calcularValorPorCategoria("cpf-15-30"))}`, 10, 115);
     doc.text(`Migrados CPF +30k: ${document.getElementById("migrados-cpf-30").value}`, 10, 125);
@@ -188,12 +176,8 @@ function exportarPDF() {
     doc.setFontSize(14);
     doc.text("Aceleradores", 10, 195);
     doc.setFontSize(12);
-    const migradosTotais = parseInt(document.getElementById("migrados-totais").value);
-    const ponderadoMedio = parseFloat(removerFormatacaoMoeda(document.getElementById("ponderado-medio").value));
-    const resultadoAceleradores = calcularAceleradorQualidade() + calcularAceleradorVolume();
-
-    doc.text(`Migrados Totais: ${migradosTotais}`, 10, 205);
-    doc.text(`Ponderado Médio Total: ${formatarMoeda(ponderadoMedio)}`, 10, 215);
+    doc.text(`Migrados Totais: ${document.getElementById("migrados-totais").value}`, 10, 205);
+    doc.text(`Ponderado Médio Total: ${formatarMoeda(removerFormatacaoMoeda(document.getElementById("ponderado-medio").value))}`, 10, 215);
     doc.text(`Acelerador de Qualidade: ${formatarMoeda(calcularAceleradorQualidade())}`, 10, 225);
     doc.text(`Acelerador de Volume: ${formatarMoeda(calcularAceleradorVolume())}`, 10, 235);
     doc.text(`Total Aceleradores: ${formatarMoeda(resultadoAceleradores)}`, 10, 245);
@@ -202,39 +186,49 @@ function exportarPDF() {
     doc.setFontSize(14);
     doc.text("Total de Comissionamento", 10, 255);
     doc.setFontSize(12);
-    const totalComissionamento = resultadoConquista + resultadoSafra + resultadoAceleradores;
-    doc.text(`Total: ${formatarMoeda(totalComissionamento)}`, 10, 265);
+    doc.text(`Total: ${formatarMoeda(resultadoConquista + resultadoSafra + resultadoAceleradores)}`, 10, 265);
 
     // Salvar o PDF
     doc.save(`comissionamento_${nomeConsultor}.pdf`);
 }
 
-// Função para calcular o valor por categoria 
+// Função para calcular o valor por categoria
 function calcularValorPorCategoria(categoria) {
-    const porcentagemParcelado = parseFloat(document.getElementById("porcentagem-parcelado").value) || 0;
-    const migrados = parseInt(document.getElementById("migrados").value) || 0;
-    let valor = 0;
+    const porcentagemParcelado = parseFloat(document.getElementById("porcentagem-parcelado").value);
+    const migrados = parseInt(document.getElementById(`migrados-${categoria}`).value);
 
-    switch (categoria) {
-        case "cpf-15-30":
-            valor = migrados * 100 * (porcentagemParcelado / 100);
-            break;
-        case "cpf-30":
-            valor = migrados * 150 * (porcentagemParcelado / 100);
-            break;
-        case "cnpj-15-30":
-            valor = migrados * 200 * (porcentagemParcelado / 100);
-            break;
-        case "cnpj-30":
-            valor = migrados * 250 * (porcentagemParcelado / 100);
-            break;
-        case "safra":
-            valor = migrados * 50 * (porcentagemParcelado / 100);
-            break;
-        default:
-            valor = migrados * 50;
-            break;
+    if (categoria === "cpf-15-30") {
+        if (porcentagemParcelado < 50) return migrados * 100;
+        else if (porcentagemParcelado >= 50 && porcentagemParcelado <= 59.9) return migrados * 150;
+        else if (porcentagemParcelado > 60) return migrados * 225;
+    } else if (categoria === "cpf-30") {
+        if (porcentagemParcelado < 50) return migrados * 130;
+        else if (porcentagemParcelado >= 50 && porcentagemParcelado <= 59.9) return migrados * 195;
+        else if (porcentagemParcelado > 60) return migrados * 292;
+    } else if (categoria === "cnpj-15-30") {
+        if (porcentagemParcelado < 50) return migrados * 150;
+        else if (porcentagemParcelado >= 50 && porcentagemParcelado <= 59.9) return migrados * 200;
+        else if (porcentagemParcelado > 60) return migrados * 270;
+    } else if (categoria === "cnpj-30") {
+        if (porcentagemParcelado < 50) return migrados * 180;
+        else if (porcentagemParcelado >= 50 && porcentagemParcelado <= 59.9) return migrados * 234;
+        else if (porcentagemParcelado > 60) return migrados * 350;
     }
+    return 0;
+}
 
-    return valor;
+// Função para calcular o Acelerador de Qualidade
+function calcularAceleradorQualidade() {
+    const migradosTotais = parseInt(document.getElementById("migrados-totais").value);
+    if (migradosTotais >= 7 && migradosTotais <= 11) return resultadoSafra * 0.20;
+    else if (migradosTotais >= 12) return resultadoSafra * 0.30;
+    return 0;
+}
+
+// Função para calcular o 
+function calcularAceleradorVolume() {
+    const ponderadoMedio = removerFormatacaoMoeda(document.getElementById("ponderado-medio").value);
+    if (ponderadoMedio >= 200000 && ponderadoMedio <= 300000) return resultadoSafra * 0.20;
+    else if (ponderadoMedio > 300000) return resultadoSafra * 0.30;
+    return 0;
 }
