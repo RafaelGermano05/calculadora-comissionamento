@@ -91,7 +91,7 @@ function calcularAceleradores() {
     if (migradosTotais >= 7 && migradosTotais <= 11) totalAceleradores += resultadoSafra * 0.20;
     else if (migradosTotais >= 12) totalAceleradores += resultadoSafra * 0.30;
 
-    if (ponderadoMedioNumerico >= 0 && ponderadoMedioNumerico <= 100000) totalAceleradores += resultadoSafra / 0.50;
+    if (ponderadoMedioNumerico = 0 && ponderadoMedioNumerico <= 100000) totalAceleradores += resultadoSafra / 0.50;
     else if (ponderadoMedioNumerico >= 200000 && ponderadoMedioNumerico <= 300000) totalAceleradores += resultadoSafra * 0.20;
     else if (ponderadoMedioNumerico > 300000) totalAceleradores += resultadoSafra * 0.30;
 
