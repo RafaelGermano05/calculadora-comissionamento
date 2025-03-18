@@ -140,16 +140,19 @@ function exportarPDF() {
     const doc = new jsPDF();
 
     // Cabeçalho do PDF
-    doc.setFontSize(18);
+    doc.setFontSize(20);
     doc.text("Calculadora de Simulação de Comissionamento", 10, 15);
+    doc.setFontSize(10);
+    doc.text("Os dados gerados são simulações/projeções de remuneração variável(dados não oficiais)", 10, 15);
+
 
     // Informações do Consultor
     const nomeConsultor = document.getElementById("nome-consultor").value;
-    doc.setFontSize(12);
+    doc.setFontSize(13);
     doc.text(`Consultor: ${nomeConsultor}`, 10, 25);
 
     // Dados de Conquista
-    doc.setFontSize(14);
+    doc.setFontSize(18);
     doc.text("Conquista", 10, 35);
     doc.setFontSize(12);
     doc.text(`Valor de Referência: ${formatarMoeda(parseFloat(document.getElementById("valor-referencia").value))}`, 10, 45);
@@ -158,7 +161,7 @@ function exportarPDF() {
     doc.text(`Total Conquista: ${formatarMoeda(resultadoConquista)}`, 10, 75);
 
     // Dados de Safra
-    doc.setFontSize(14);
+    doc.setFontSize(18);
     doc.text("Safra", 10, 85);
     doc.setFontSize(12);
     doc.text(`Porcentagem de Parcelado: ${document.getElementById("porcentagem-parcelado").value}%`, 10, 95);
@@ -173,7 +176,7 @@ function exportarPDF() {
     doc.text(`Total Safra: ${formatarMoeda(resultadoSafra)}`, 10, 185);
 
     // Dados de Aceleradores
-    doc.setFontSize(14);
+    doc.setFontSize(18);
     doc.text("Aceleradores", 10, 195);
     doc.setFontSize(12);
     doc.text(`Migrados Totais: ${document.getElementById("migrados-totais").value}`, 10, 205);
@@ -183,7 +186,7 @@ function exportarPDF() {
     doc.text(`Total Aceleradores: ${formatarMoeda(resultadoAceleradores)}`, 10, 245);
 
     // Total de Comissionamento
-    doc.setFontSize(14);
+    doc.setFontSize(18);
     doc.text("Total de Comissionamento", 10, 255);
     doc.setFontSize(12);
     doc.text(`Total: ${formatarMoeda(resultadoConquista + resultadoSafra + resultadoAceleradores)}`, 10, 265);
