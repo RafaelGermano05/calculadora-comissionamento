@@ -4,19 +4,22 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Calculadora de Comissionamento</title>
-    <link rel="stylesheet" href="assets/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
     <link rel="shortcut icon" href="assets/logofortsun.jpg" type="image/x-icon">
+    <link rel="stylesheet" href="assets/style.css">
 </head>
 <body>
-    <div class="main-wrapper">
-        <div class="logo-container">
+    <div class="particles" id="particles"></div>
+    
+    <div class="main-wrapper animate__animated animate__fadeIn">
+        <div class="logo-container float-up">
             <img src="assets/LOGO_FORTSUN_PDF.png" alt="Logo Fortsun" class="logo">
         </div>
 
         <div class="calculator-container">
-            <h1>Calculadora de Comissionamento</h1>
+            <h1 class="animate__animated animate__fadeInDown">Calculadora de Comissionamento</h1>
 
-            <div class="card">
+            <div class="card animate__animated animate__fadeInLeft">
                 <h2>Nome do Consultor(a)</h2>
                 <input type="text" id="nome-consultor" placeholder="Digite o nome do consultor" required>
                 
@@ -27,7 +30,7 @@
                 </div>
             </div>
 
-            <div class="card">
+            <div class="card animate__animated animate__fadeInRight">
                 <h2>Conquista</h2>
                 <input type="number" id="valor-referencia" placeholder="Valor de Referência (Salário)" required>
                 <input type="number" id="new-mas" placeholder="Quantidade de New Mas" required>
@@ -37,7 +40,7 @@
                     <option value="m2">M2</option>
                     <option value="full">Full</option>
                 </select>
-                <button class="btn-calculate" onclick="calcularConquista()">Calcular Conquista</button>
+                <button class="btn-calculate pulse" onclick="calcularConquista()">Calcular Conquista</button>
                 <div class="result-box" id="resultado-conquista"></div>
                 
                 <div class="tip-box">
@@ -47,7 +50,7 @@
                 </div>
             </div>
 
-            <div class="card">
+            <div class="card animate__animated animate__fadeInLeft">
                 <h2>Safra e Aceleradores</h2>
                 
                 <div class="section-title">Dados da Safra</div>
@@ -63,7 +66,7 @@
                 <input type="text" id="ponderado-medio" placeholder="Ponderado Médio Total (ex: 1.000,00)" required>
                 <input type="number" id="migrados-totais" placeholder="Migrados Totais" required>
                 
-                <button class="btn-calculate" onclick="calcularSafraEAceleradores()">Calcular Safra e Aceleradores</button>
+                <button class="btn-calculate pulse" onclick="calcularSafraEAceleradores()">Calcular Safra e Aceleradores</button>
                 
                 <div class="result-box">
                     <h4>Resultado Safra</h4>
@@ -93,7 +96,7 @@
                 </div>
             </div>
 
-            <div class="card">
+            <div class="card animate__animated animate__fadeInUp">
                 <h2>Resultado Final</h2>
                 <div class="result-box" id="resultado-final"></div>
                 <div class="action-buttons">
@@ -114,22 +117,7 @@
         </footer>
     </div>
 
-    <script src="assets/script.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            document.getElementById("dica-safra").innerHTML = `
-                <div class="tip-box">
-                    <div class="tip-title">Atenção:</div>
-                    <p>O campo Ponderado Médio deve ser preenchido com o valor total (ex: 150.000,00)</p>
-                </div>`;
-                
-            document.getElementById("dica-aceleradores").innerHTML = `
-                <div class="tip-box">
-                    <div class="tip-title">Informação:</div>
-                    <p>Os aceleradores são calculados automaticamente com base no valor Safra</p>
-                </div>`;
-        });
-    </script>
+    <script src="assets/script.js"></script>
 </body>
 </html>
