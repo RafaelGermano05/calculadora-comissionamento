@@ -52,6 +52,74 @@
                 .replace(/[^0-9.]/g, '')); 
         }
 
+        function obterInteiroCampo(id) {
+            const campo = document.getElementById(id);
+            return parseInt(campo?.value || "0", 10) || 0;
+        }
+
+        function obterPercentualCampo(id) {
+            const campo = document.getElementById(id);
+            const valor = String(campo?.value || "0").replace(',', '.');
+            return parseFloat(valor) || 0;
+        }
+
+        function obterClassificacaoParcelado(porcentagemParcelado) {
+            if (porcentagemParcelado < 50) return "Bronze";
+            if (porcentagemParcelado < 60) return "Prata";
+            return "Ouro";
+        }
+
+        function calcularValorMigrado(classificacao, tipoDocumento, faixaTpv) {
+            const tabelaSafra = {
+                Bronze: {
+                    CPF: { faixa20a40: 100, faixa40Mais: 117 },
+                    CNPJ: { faixa20a40: 160, faixa40Mais: 195 }
+                },
+                Prata: {
+                    CPF: { faixa20a40: 135, faixa40Mais: 175 },
+                    CNPJ: { faixa20a40: 215, faixa40Mais: 255 }
+                },
+                Ouro: {
+                    CPF: { faixa20a40: 200, faixa40Mais: 260 },
+                    CNPJ: { faixa20a40: 295, faixa40Mais: 380 }
+                }
+            };
+
+            const valoresPorClassificacao = tabelaSafra[classificacao] || {};
+            const valoresPorDocumento = valoresPorClassificacao[tipoDocumento] || {};
+            return valoresPorDocumento[faixaTpv] || 0;
+        }
+
+        function obterQuantidadeClientesAcima20K() {
+            // Os IDs antigos foram mantidos para compatibilidade com o HTML atual.
+            const totalPorFaixas =
+                obterInteiroCampo("migrados-cpf-15-30") +
+                obterInteiroCampo("migrados-cpf-30") +
+                obterInteiroCampo("migrados-cnpj-15-30") +
+                obterInteiroCampo("migrados-cnpj-30");
+            const totalInformado = obterInteiroCampo("migrados-totais");
+
+            return totalPorFaixas > 0 ? totalPorFaixas : totalInformado;
+        }
+
+        function atualizarRotulosSafra() {
+            const rotulos = {
+                "migrados-cpf-15-30": "Migrados CPF R$ 20k a R$ 39,99k",
+                "migrados-cpf-30": "Migrados CPF R$ 40k+",
+                "migrados-cnpj-15-30": "Migrados CNPJ R$ 20k a R$ 39,99k",
+                "migrados-cnpj-30": "Migrados CNPJ R$ 40k+",
+                "migrados-totais": "Clientes acima de R$ 20k"
+            };
+
+            Object.entries(rotulos).forEach(([id, texto]) => {
+                const campo = document.getElementById(id);
+                const label = document.querySelector(`label[for="${id}"]`);
+
+                if (label) label.textContent = texto;
+                if (campo) campo.setAttribute("aria-label", texto);
+            });
+        }
+
         // Formatação automática do campo Ponderado Médio
         document.getElementById('ponderado-medio').addEventListener('input', function (e) {
             let valor = e.target.value.replace(/\D/g, ''); 
@@ -109,45 +177,38 @@
 
         function calcularSafraEAceleradores() {
             // Cálculo da Safra
-            const porcentagemParcelado = parseFloat(document.getElementById("porcentagem-parcelado").value || "0");
-            const migradosCPF15_30 = parseInt(document.getElementById("migrados-cpf-15-30").value || "0");
-            const migradosCPF30 = parseInt(document.getElementById("migrados-cpf-30").value || "0");
-            const migradosCNPJ15_30 = parseInt(document.getElementById("migrados-cnpj-15-30").value || "0");
-            const migradosCNPJ30 = parseInt(document.getElementById("migrados-cnpj-30").value || "0");
+            const porcentagemParcelado = obterPercentualCampo("porcentagem-parcelado");
+            const classificacaoParcelado = obterClassificacaoParcelado(porcentagemParcelado);
+            const migradosCPF20_40 = obterInteiroCampo("migrados-cpf-15-30");
+            const migradosCPF40 = obterInteiroCampo("migrados-cpf-30");
+            const migradosCNPJ20_40 = obterInteiroCampo("migrados-cnpj-15-30");
+            const migradosCNPJ40 = obterInteiroCampo("migrados-cnpj-30");
             const ponderadoMedio = removerFormatacaoMoeda(document.getElementById('ponderado-medio').value);
 
             let totalSafra = 0;
 
-            // Cálculos para CPF 15k-29,99k
-            if (porcentagemParcelado < 50) totalSafra += migradosCPF15_30 * 100;
-            else if (porcentagemParcelado >= 50 && porcentagemParcelado <= 59.9) totalSafra += migradosCPF15_30 * 150;
-            else if (porcentagemParcelado > 60) totalSafra += migradosCPF15_30 * 225;
-
-            // Cálculos para CPF +30k
-            if (porcentagemParcelado < 50) totalSafra += migradosCPF30 * 130;
-            else if (porcentagemParcelado >= 50 && porcentagemParcelado <= 59.9) totalSafra += migradosCPF30 * 195;
-            else if (porcentagemParcelado > 60) totalSafra += migradosCPF30 * 292;
-
-            // Cálculos para CNPJ 15k-29,99k
-            if (porcentagemParcelado < 50) totalSafra += migradosCNPJ15_30 * 150;
-            else if (porcentagemParcelado >= 50 && porcentagemParcelado <= 59.9) totalSafra += migradosCNPJ15_30 * 200;
-            else if (porcentagemParcelado > 60) totalSafra += migradosCNPJ15_30 * 270;
-
-            // Cálculos para CNPJ +30k
-            if (porcentagemParcelado < 50) totalSafra += migradosCNPJ30 * 180;
-            else if (porcentagemParcelado >= 50 && porcentagemParcelado <= 59.9) totalSafra += migradosCNPJ30 * 234;
-            else if (porcentagemParcelado > 60) totalSafra += migradosCNPJ30 * 350;
+            // Novas faixas: R$ 20k a R$ 39,99k e R$ 40k+.
+            totalSafra += migradosCPF20_40 * calcularValorMigrado(classificacaoParcelado, "CPF", "faixa20a40");
+            totalSafra += migradosCPF40 * calcularValorMigrado(classificacaoParcelado, "CPF", "faixa40Mais");
+            totalSafra += migradosCNPJ20_40 * calcularValorMigrado(classificacaoParcelado, "CNPJ", "faixa20a40");
+            totalSafra += migradosCNPJ40 * calcularValorMigrado(classificacaoParcelado, "CNPJ", "faixa40Mais");
 
             // Aplicar redução de 50% se PonderadoMédio for menor que 100k
+            const dicaSafra = document.getElementById("dica-safra");
             if (ponderadoMedio < 100000) {
                 totalSafra = totalSafra * 0.5;
-                document.getElementById("dica-safra").innerHTML = `
+                dicaSafra.innerHTML = `
                     <div class="tip-box animate__animated animate__shakeX">
-                        <div class="tip-title">Aviso:</div> 
+                        <div class="tip-title">Safra aplicada:</div>
+                        <p>Classificação por parcelado: ${classificacaoParcelado}</p>
                         <p>Ponderado Médio abaixo de R$ 100.000 - Valor Safra reduzido em 50%</p>
                     </div>`;
             } else {
-                document.getElementById("dica-safra").innerHTML = "";
+                dicaSafra.innerHTML = `
+                    <div class="tip-box animate__animated animate__fadeIn">
+                        <div class="tip-title">Safra aplicada:</div>
+                        <p>Classificação por parcelado: ${classificacaoParcelado}</p>
+                    </div>`;
             }
 
             resultadoSafra = totalSafra;
@@ -161,26 +222,26 @@
             }, 1000);
 
             // Cálculo dos Aceleradores (usa o resultadoSafra calculado acima)
-            const migradosTotais = parseInt(document.getElementById("migrados-totais").value || "0");
+            const clientesAcima20K = obterQuantidadeClientesAcima20K();
             let totalAceleradores = 0;
-            let dicaAcelerador = "";
+            const dicasAcelerador = [];
 
-            // Acelerador de Qualidade
-            if (migradosTotais >= 7 && migradosTotais <= 11) {
+            // Acelerador de Quantidade
+            if (clientesAcima20K >= 7 && clientesAcima20K <= 11) {
                 totalAceleradores += resultadoSafra * 0.20;
-                dicaAcelerador += "Acelerador de Qualidade (7-11 migrados): +20%<br>";
-            } else if (migradosTotais >= 12) {
+                dicasAcelerador.push("Acelerador de Quantidade (7-11 clientes acima de R$ 20k): +20%");
+            } else if (clientesAcima20K >= 12) {
                 totalAceleradores += resultadoSafra * 0.30;
-                dicaAcelerador += "Acelerador de Qualidade (12+ migrados): +30%<br>";
+                dicasAcelerador.push("Acelerador de Quantidade (12+ clientes acima de R$ 20k): +30%");
             }
 
-            // Acelerador de Volume
-            if (ponderadoMedio >= 200000 && ponderadoMedio <= 300000) {
+            // Acelerador de Qualidade
+            if (ponderadoMedio >= 250000 && ponderadoMedio < 375000) {
                 totalAceleradores += resultadoSafra * 0.20;
-                dicaAcelerador += "Acelerador de Volume (Ponderado R$ 200k-300k): +20%";
-            } else if (ponderadoMedio > 300000) {
+                dicasAcelerador.push("Acelerador de Qualidade (Ponderado R$ 250k a R$ 374,99k): +20%");
+            } else if (ponderadoMedio >= 375000) {
                 totalAceleradores += resultadoSafra * 0.30;
-                dicaAcelerador += "Acelerador de Volume (Ponderado > R$ 300k): +30%";
+                dicasAcelerador.push("Acelerador de Qualidade (Ponderado R$ 375k+): +30%");
             }
 
             resultadoAceleradores = totalAceleradores;
@@ -194,6 +255,7 @@
             }, 1000);
             
             // Mostrar dicas de aceleradores
+            const dicaAcelerador = dicasAcelerador.join("<br>");
             if (dicaAcelerador) {
                 const dicaBox = document.getElementById("dica-aceleradores");
                 dicaBox.innerHTML = `
@@ -342,11 +404,12 @@
             
             doc.setFontSize(12);
             doc.setFont("helvetica", "normal");
-            doc.text(`Porcentagem de Parcelado: ${document.getElementById("porcentagem-parcelado").value || "0"}%`, 10, 107);
-            doc.text(`Migrados CPF 15k-29,99k: ${document.getElementById("migrados-cpf-15-30").value || "0"}`, 10, 114);
-            doc.text(`Migrados CPF +30k: ${document.getElementById("migrados-cpf-30").value || "0"}`, 10, 121);
-            doc.text(`Migrados CNPJ 15k-29,99k: ${document.getElementById("migrados-cnpj-15-30").value || "0"}`, 10, 128);
-            doc.text(`Migrados CNPJ +30k: ${document.getElementById("migrados-cnpj-30").value || "0"}`, 10, 135);
+            const porcentagemParcelado = obterPercentualCampo("porcentagem-parcelado");
+            doc.text(`Porcentagem de Parcelado: ${document.getElementById("porcentagem-parcelado").value || "0"}% (${obterClassificacaoParcelado(porcentagemParcelado)})`, 10, 107);
+            doc.text(`Migrados CPF R$ 20k a R$ 39,99k: ${document.getElementById("migrados-cpf-15-30").value || "0"}`, 10, 114);
+            doc.text(`Migrados CPF R$ 40k+: ${document.getElementById("migrados-cpf-30").value || "0"}`, 10, 121);
+            doc.text(`Migrados CNPJ R$ 20k a R$ 39,99k: ${document.getElementById("migrados-cnpj-15-30").value || "0"}`, 10, 128);
+            doc.text(`Migrados CNPJ R$ 40k+: ${document.getElementById("migrados-cnpj-30").value || "0"}`, 10, 135);
             doc.text(`Total Safra: ${formatarMoeda(resultadoSafra)}`, 10, 142);
 
             // Dados de Aceleradores
@@ -357,7 +420,7 @@
             doc.setFontSize(12);
             doc.setFont("helvetica", "normal");
             doc.text(`Ponderado Médio: ${formatarMoeda(removerFormatacaoMoeda(document.getElementById("ponderado-medio").value))}`, 10, 161);
-            doc.text(`Migrados Totais: ${document.getElementById("migrados-totais").value || "0"}`, 10, 168);
+            doc.text(`Clientes acima de R$ 20k: ${obterQuantidadeClientesAcima20K()}`, 10, 168);
             doc.text(`Total Aceleradores: ${formatarMoeda(resultadoAceleradores)}`, 10, 175);
 
             // Resultado Final
@@ -394,18 +457,20 @@
 
         // Inicialização
         document.addEventListener('DOMContentLoaded', function() {
+            atualizarRotulosSafra();
             createParticles();
             
             document.getElementById("dica-safra").innerHTML = `
                 <div class="tip-box animate__animated animate__fadeIn">
                     <div class="tip-title">Atenção:</div>
+                    <p>Use as novas faixas de TPV: R$ 20k a R$ 39,99k e R$ 40k+.</p>
                     <p>O campo Ponderado Médio deve ser preenchido com o valor total (ex: 150.000,00)</p>
                 </div>`;
                 
             document.getElementById("dica-aceleradores").innerHTML = `
                 <div class="tip-box animate__animated animate__fadeIn">
                     <div class="tip-title">Informação:</div>
-                    <p>Os aceleradores são calculados automaticamente com base no valor Safra</p>
+                    <p>Os aceleradores usam a quantidade de clientes acima de R$ 20k e o Ponderado Médio.</p>
                 </div>`;
                 
             // Adiciona efeito de digitação ao título
