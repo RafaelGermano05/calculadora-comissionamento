@@ -353,8 +353,8 @@
             
             // Configurações iniciais
             doc.setProperties({
-                title: 'Relatório de Comissionamento',
-                subject: 'Cálculo de comissionamento',
+                title: 'Relatório de Premiação',
+                subject: 'Cálculo de premiação',
                 author: 'Calculadora Fortsun',
                 keywords: 'comissionamento, cálculo, relatório',
                 creator: 'Fortsun'
@@ -364,11 +364,11 @@
             doc.setFontSize(20);
             doc.setTextColor(40, 40, 40);
             doc.setFont("helvetica", "bold");
-            doc.text("Relatório de Simulação de Comissionamento", 105, 15, { align: "center" });
+            doc.text("Relatório de Simulação de Premiação", 105, 15, { align: "center" });
             
             doc.setFontSize(12);
             doc.setFont("helvetica", "normal");
-            doc.text("Dados gerados pela Simuladora de Comissionamento Fortsun", 105, 22, { align: "center" });
+            doc.text("Dados gerados pela Simuladora de Premiação Fortsun", 105, 22, { align: "center" });
             
             // Linha divisória
             doc.setDrawColor(200, 200, 200);
@@ -430,13 +430,13 @@
             doc.text("RESULTADO FINAL", 105, 190, { align: "center" });
             
             doc.setFontSize(14);
-            doc.text(`Total de Comissionamento: ${formatarMoeda(resultadoConquista + resultadoSafra + resultadoAceleradores)}`, 105, 200, { align: "center" });
+            doc.text(`Total de Premiação: ${formatarMoeda(resultadoConquista + resultadoSafra + resultadoAceleradores)}`, 105, 200, { align: "center" });
 
             // Rodapé
             doc.setFontSize(10);
             doc.setTextColor(100, 100, 100);
             doc.setFont("helvetica", "italic");
-            doc.text("Relatório gerado automaticamente pela Simuladora de Comissionamento Fortsun", 105, 290, { align: "center" });
+            doc.text("Relatório gerado automaticamente pela Simuladora de Premiação Fortsun", 105, 290, { align: "center" });
 
             const dataAtual = new Date();
             const dia = String(dataAtual.getDate()).padStart(2, '0');
